@@ -21,7 +21,7 @@ int main()
  vector <double> GnR;
  vector <double> phi;
  // Change the values in the next three lines. No other changes required. 
- int start_time_step=0,end_time_step=200, num_columns, coord_count; //Change only the values for time steps
+ int start_time_step=0,end_time_step=100, num_columns, coord_count; //Change only the values for time steps
  double abs_X_mesh_size = 2.0E-05, abs_Y_mesh_size = 2.0E-05;       //Change only the values for mesh sizes to extract XY, XZ plane phi data
  double N_o = 2.0E14, a = 1.25E6, n = 3.4;                          //Original Gaumann: Nucleation density (per m3)
 //double N_o = 1.18E15, a = 2.03E6, n = 5.3;                        //Optimized Debroy Paper: Nucleation density (per m3)
@@ -170,7 +170,8 @@ int main()
   } 
   output_file.close();
 //Calculate and Write volume fraction of equiaxed grains formed: one vale in one simulation
-  double PHI = cumulative_phi/non_zero_volume_ele_count;
+  double PHI=0;
+  if (non_zero_volume_ele_count>0) PHI = cumulative_phi/non_zero_volume_ele_count; 
   output_file.open("PHI.txt");
   output_file<<"The volume fraction of equiaxed grains in this simulation is:  "<<PHI<<endl;
   output_file.close(); 

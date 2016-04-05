@@ -15,8 +15,8 @@ parser.add_option("--wait_time", type=float)
 (options, args) = parser.parse_args()
 
 # get the parameters from PUQ
-x = options.on_time
-y = options.power
+x = 0.00025 #options.on_time
+y = 200 #options.power
 z = options.wait_time
 
 # generate input path file
@@ -33,7 +33,7 @@ call(cmd, cwd=scripts_dir)
 
 # launch the simulation
 truchas_binary = '/home/srdjans/projects/truchas-2.8.0-RC/install/linux.x86_64.intel.parallel.opt/bin/t-linux.x86_64.intel.parallel.opt-2.8.0'
-cmd = ['mpirun', '-np', str(cpus), truchas_binary, 'test.inp']
+cmd = ['nohup', 'mpirun', '-np', str(cpus), truchas_binary, 'test.inp']
 call(cmd, cwd=launch_dir)
 
 # postprocess the results
@@ -41,7 +41,9 @@ cmd = ['bash', scripts_dir+'/postprocessor.sh']
 call(cmd, cwd=result_dir)
 
 # extract quantity of interest
-qoi = float(lines[0].split(':')[1].lstrip(' ').strip('\n'))
+with open(result_dir+'/PHI.txt', 'r') as fin:
+    lines = fin.readlines()
+    qoi = float(lines[0].split(':')[1].lstrip(' ').strip('\n'))
 
 # report the quantities of interest to PUQ
 dump_hdf5('volume_fraction_of_equiaxed_grains', qoi)

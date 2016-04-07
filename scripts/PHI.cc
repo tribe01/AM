@@ -21,16 +21,40 @@ int main()
  vector <double> GnR;
  vector <double> phi;
  // Change the values in the next three lines. No other changes required. 
- int start_time_step=0,end_time_step=100, num_columns, coord_count; //Change only the values for time steps
+ int start_time_step=0,end_time_step, num_columns, coord_count; //Change only the values for time steps
  double abs_X_mesh_size = 2.0E-05, abs_Y_mesh_size = 2.0E-05;       //Change only the values for mesh sizes to extract XY, XZ plane phi data
- double N_o = 2.0E14, a = 1.25E6, n = 3.4;                          //Original Gaumann: Nucleation density (per m3)
+ double PHI, alloy_liquidus_temp =1610, N_o = 2.0E14, a = 1.25E6, n = 3.4;                          //Original Gaumann: Nucleation density (per m3)
 //double N_o = 1.18E15, a = 2.03E6, n = 5.3;                        //Optimized Debroy Paper: Nucleation density (per m3)
  double temp;
  string dummy;
  ofstream output_file;
  ifstream data_file;
  ostringstream oss;
+//Check for complete solidification at final time step
+  double max_temp;
+  data_file.open("max_temp.txt");
+  while (data_file.fail())
+    { cout<<endl<<"File max_temp.txt has not been generated from okc_gen.py to check for complete solidification."<<endl<<"Postprocessing terminated abnormally"<<endl;
+      exit(0);
+    }
+  data_file>>max_temp;
+  if (max_temp > alloy_liquidus_temp)
+    {
+      PHI = 2;
+      output_file.open("PHI.txt");
+      output_file<<"The simulation has failed due to incomplete solidification at the end of simulation PHI:  "<<PHI<<endl;
+      output_file.close();
+      exit(0);
+    }
 
+// Read number of time steps
+  data_file.open("Timestates.txt");
+  while (data_file.fail())
+    { cout<<endl<<"File Timestates.txt has not been generated from okc_gen.py to autocalculate the number of data files."<<endl<<"Postprocessing terminated abnormally"<<endl;
+      exit(0);
+    }
+  data_file>>end_time_step;
+  data_file.close();
 //Create consolidated XYZ Interface Velocity file
  data_file.open("R0000.okc");
  while (data_file.fail())
@@ -170,7 +194,6 @@ int main()
   } 
   output_file.close();
 //Calculate and Write volume fraction of equiaxed grains formed: one vale in one simulation
-  double PHI=0;
   if (non_zero_volume_ele_count>0) PHI = cumulative_phi/non_zero_volume_ele_count; 
   output_file.open("PHI.txt");
   output_file<<"The volume fraction of equiaxed grains in this simulation is:  "<<PHI<<endl;

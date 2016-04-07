@@ -12,13 +12,16 @@ DefineScalarExpression("LS_Interface_Velocity", "if(and(and(lt(T,1610), gt(T,160
 #Calculate number of time states
 n=TimeSliderGetNStates()-1;
 #Check for complete solidification
+TS = open("Timestates.txt", "wb+")
+TS.write(str(n));
+TS.close()
 AddPlot("Pseudocolor", "T")
 DrawPlots()
 SetTimeSliderState(n)
 Query("Max")
 max_temp = GetQueryOutputValue()
 MT = open("max_temp.txt", "wb+")
-MT.write("Maximum Temperature at the last time step is: "+str(max_temp)+" K");
+MT.write(str(max_temp)+" K"+" is the maximum temperature at the final time step of the simulation");
 MT.close()
 if max_temp > 1610:
     ER = open("postprocessing_failure.txt", "wb+")

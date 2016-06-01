@@ -1,8 +1,14 @@
-from __future__ import print_function
-import os, sys
+#!/usr/bin/python
 
+import os
+import sys
+sys.path.append('/home/n22/softwares/visit/2_10/2.10.2/linux-x86_64/lib/site-packages')
+from visit import * 
+import glob
+
+LaunchNowin()
 # Construct Thermal Gradient vector and filter the thermal gradient at the liquid solid interface and the liquid solid interface velocity with help of cooling rate
-OpenDatabase("MAIN-data.gmv.*.gmv database", 0)
+OpenDatabase("MAIN-data.*.gmv database", 0)
 DefineScalarExpression("Cooling_Rate", "(<dT/dt>)")
 DefineVectorExpression("Thermal_Gradient_Vector", "{<dT/dx>,<dT/dy>,<dT/dz>}")
 DefineScalarExpression("Thermal_Gradient_Magnitude", "magnitude(Thermal_Gradient_Vector)")
